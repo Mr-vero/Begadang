@@ -775,7 +775,7 @@ async function fetchFromApi(){
     if(newSchedule.length){schedule.length=0;schedule.push(...newSchedule);}
 
     const newPreds=buildPredsFromMatches(allApiMatches);
-    if(newPreds.length){preds.length=0;preds.push(...newPreds);}
+    if(newPreds.length){preds.length=0;preds.push(...newPreds);restorePicks();}
 
     const upcoming=allApiMatches.filter(m=>m.status==='up'&&m.h!=='TBD').slice(0,6);
     if(upcoming.length){
@@ -900,6 +900,37 @@ function updateHeroInPlace(){
     const cd=m.status==='up'?countdown(m.utcDate):null;
     clock.textContent=m.status==='up'?(cd||m.time+' WIB'):m.time;
   }
+}
+
+/* ========== LOCALSTORAGE PERSISTENCE ========== */
+function savePicks(){
+  const data={};
+  preds.forEach(p=>{if(p.picked!==null)data[p.q]=p.picked;});
+  localStorage.setItem('begadang_picks',JSON.stringify(data));
+}
+function restorePicks(){
+  try{
+    const data=JSON.parse(localStorage.getItem('begadang_picks')||'{}');
+    preds.forEach(p=>{if(data[p.q]!==undefined)p.picked=data[p.q];});
+  }catch{}
+}
+function savePoints(){localStorage.setItem('begadang_points',String(predPoints));}
+function restorePoints(){
+  const v=localStorage.getItem('begadang_points');
+  if(v)predPoints=parseInt(v)||128;
+}
+function savePartyJoins(){
+  const data={};
+  parties.forEach(p=>{if(p.joined)data[p.name]=true;});
+  localStorage.setItem('begadang_parties',JSON.stringify(data));
+}
+function restorePartyJoins(){
+  try{
+    const data=JSON.parse(localStorage.getItem('begadang_parties')||'{}');
+    parties.forEach(p=>{
+      if(data[p.name]&&!p.joined){p.joined=true;p.going++;}
+    });
+  }catch{}
 }
 
 /* ========== FALLBACK SAMPLE DATA ========== */
@@ -1404,15 +1435,18 @@ document.getElementById('parties').addEventListener('click',e=>{
   parties[i].joined=!parties[i].joined;
   parties[i].going+=parties[i].joined?1:-1;
   renderParties();
-  if(parties[i].joined)showToast('Joined! See you there 🎉');
+  savePartyJoins();
+  if(parties[i].joined)showToast('Joined! See you there');
 });
 document.getElementById('preds').addEventListener('click',e=>{
   const o=e.target.closest('.opt');if(!o)return;
   const pi=+o.dataset.pred;
-  if(preds[pi].picked===null)predPoints+=3;
+  if(preds[pi].picked!==null)return;
+  predPoints+=3;
   preds[pi].picked=+o.dataset.opt;
   renderPreds();
-  showToast('Prediction saved!');
+  savePicks();savePoints();
+  showToast('Prediction locked in!');
 });
 document.getElementById('remindBtn').addEventListener('click',e=>{
   const b=e.currentTarget;const on=b.classList.toggle('on');
@@ -1518,6 +1552,9 @@ function updateDemoNote(){
       if(ok)apiMode=true;
     }
   }catch{}
+  restorePoints();
+  restorePicks();
+  restorePartyJoins();
   const initList=fixtures[curDay]||[];
   if(initList.some(m=>m.hCrest)){
     await preloadCrests(initList);
