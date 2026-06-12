@@ -1,0 +1,14 @@
+{
+  "name": "begadang",
+  "version": "1.0.0",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node --watch server.js"
+  },
+  "description": "Begadang - FIFA World Cup 2026 streaming app",
+  "dependencies": {
+    "dotenv": "^17.4.2",
+    "express": "^5.2.1"
+  }
+}
