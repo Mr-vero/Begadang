@@ -211,30 +211,6 @@
   .br-team.lose{color:var(--faint)}
   .br-team.tbd{color:var(--faint);font-style:italic}
 
-  .party{padding:16px;margin-bottom:12px}
-  .party-name{font-weight:800;font-size:16.5px;letter-spacing:-.02em}
-  .party-match{font-size:13.5px;font-weight:600;color:var(--amber);margin-top:3px}
-  .party-meta{display:flex;flex-wrap:wrap;gap:6px 16px;margin-top:11px;font-size:13px;color:var(--dim);font-weight:500}
-  .party-meta span{display:inline-flex;align-items:center;gap:5px}
-  .party-bottom{display:flex;align-items:flex-end;justify-content:space-between;margin-top:14px;gap:12px}
-  .going{font-size:13px;color:var(--dim);font-weight:500}
-  .going b{color:var(--text);font-weight:800}
-  .going .bar{height:6px;border-radius:4px;background:rgba(255,255,255,.10);margin-top:7px;overflow:hidden;width:140px}
-  .going .bar i{display:block;height:100%;background:linear-gradient(90deg,#2BD27A,#3CE38B);border-radius:4px;transition:width .6s var(--ease-out)}
-  .join-btn{padding:10px 18px;border-radius:18px;font-weight:700;font-size:13.5px;white-space:nowrap;display:inline-flex;align-items:center;gap:5px;
-    background:linear-gradient(180deg,#FFCE6A 0%,#FFC44A 50%,#F5AB2A 100%);color:#3a2400;
-    border:.5px solid rgba(255,200,90,.25);
-    box-shadow:0 3px 10px rgba(255,176,51,.18),inset 0 .5px 0 rgba(255,255,255,.35);
-    transition:all .45s var(--spring)}
-  .join-btn.joined{background:radial-gradient(ellipse 140% 80% at 50% 0%,rgba(60,227,139,.14),transparent 55%),rgba(60,227,139,.06);color:var(--green);
-    border:.5px solid rgba(60,227,139,.18);
-    box-shadow:inset 0 .8px 0 rgba(60,227,139,.22),0 2px 8px rgba(60,227,139,.10)}
-  .create-party{width:100%;border:1.5px dashed rgba(255,255,255,.12);border-radius:var(--r);padding:16px;color:var(--dim);font-weight:600;font-size:14.5px;
-    display:flex;align-items:center;justify-content:center;gap:8px;
-    background:rgba(255,255,255,.02);transition:all .45s var(--smooth)}
-  .create-party:hover{border-color:rgba(255,194,71,.35);color:var(--amber);
-    background:rgba(255,194,71,.04);box-shadow:inset 0 .5px 0 rgba(255,194,71,.10)}
-
   .pscore{display:flex;align-items:center;justify-content:space-between;padding:18px;margin-bottom:16px;position:relative;overflow:hidden}
   .pscore .lbl{font-size:12px;letter-spacing:.04em;text-transform:uppercase;color:var(--faint);font-weight:700}
   .pscore .rank{font-size:13px;color:var(--dim);margin-top:4px;font-weight:500}
@@ -365,8 +341,8 @@
       0 10px 40px rgba(0,0,0,.45),
       0 1px 4px rgba(0,0,0,.25),
       inset 0 .5px 0 rgba(255,255,255,.18)}
-  .nav-inner{position:relative;display:grid;grid-template-columns:repeat(6,1fr)}
-  .nav-ind{position:absolute;top:0;bottom:0;width:calc(100%/6);border-radius:20px;
+  .nav-inner{position:relative;display:grid;grid-template-columns:repeat(5,1fr)}
+  .nav-ind{position:absolute;top:0;bottom:0;width:calc(100%/5);border-radius:20px;
     background:radial-gradient(ellipse 120% 70% at 50% 8%,rgba(255,255,255,.12),transparent 52%),rgba(255,255,255,.05);
     border:var(--lg-rim);
     box-shadow:inset 0 .5px 0 rgba(255,255,255,.18),0 1px 6px rgba(0,0,0,.15);
@@ -423,7 +399,7 @@
     </div>
     <div class="hero-actions">
       <button class="btn btn-glass" id="remindBtn"></button>
-      <button class="btn btn-amber" id="findPartyBtn"></button>
+      <button class="btn btn-amber" id="predictBtn"></button>
     </div>
   </div>
 
@@ -454,22 +430,13 @@
     </div>
   </div>
 
-  <!-- PARTIES -->
-  <div class="panel" data-panel="parties">
-    <div class="section">
-      <div class="sec-head"><span class="sec-title">Watch parties</span><span class="sec-meta">Jambi City</span></div>
-      <div id="parties"></div>
-      <button class="create-party" id="createParty"></button>
-    </div>
-  </div>
-
   <!-- PREDICTIONS -->
   <div class="panel" data-panel="predict">
     <div class="section">
-      <div class="sec-head"><span class="sec-title">Predictions</span><span class="sec-meta">Begadang League</span></div>
+      <div class="sec-head"><span class="sec-title">My Predictions</span><span class="sec-meta">Solo game</span></div>
       <div class="pscore glass">
-        <div><div class="lbl">Your points</div><div class="rank">#412 of 8,930 in Jambi</div></div>
-        <div class="pts" id="predPts">128</div>
+        <div><div class="lbl">Your score</div><div class="rank">+3 per correct pick</div></div>
+        <div class="pts" id="predPts">0</div>
       </div>
       <div id="preds"></div>
     </div>
@@ -514,7 +481,6 @@
     <button class="nav-btn active" data-go="today" data-ic="ball">Today</button>
     <button class="nav-btn" data-go="table" data-ic="chart">Tables</button>
     <button class="nav-btn" data-go="bracket" data-ic="trophy">Bracket</button>
-    <button class="nav-btn" data-go="parties" data-ic="users">Parties</button>
     <button class="nav-btn" data-go="predict" data-ic="target">Predict</button>
     <button class="nav-btn" data-go="watch" data-ic="tv">Watch</button>
   </div>
@@ -531,7 +497,8 @@ const IC={
   clock:Ssm+'<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>',
   play:'<svg class="ic-sm" viewBox="0 0 24 24" fill="currentColor"><path d="M7 4.5v15l12-7.5z"/></svg>',
   plus:Ssm+'<path d="M12 5v14M5 12h14"/></svg>',
-  x:Ssm+'<path d="M18 6 6 18M6 6l12 12"/></svg>'
+  x:Ssm+'<path d="M18 6 6 18M6 6l12 12"/></svg>',
+  target:Ssm+'<circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1.4"/></svg>'
 };
 const NI={
   ball:'<svg class="ni" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="m12 7 3.4 2.5-1.3 4H9.9l-1.3-4z"/><path d="M12 7V3.4M15.4 9.5l3.4-1.1M14.1 13.5l2.1 2.9M9.9 13.5l-2.1 2.9M8.6 9.5 5.2 8.4"/></svg>',
@@ -545,8 +512,7 @@ const bigTv='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-w
 
 document.querySelectorAll('.nav-btn').forEach(b=>b.insertAdjacentHTML('afterbegin',NI[b.dataset.ic]));
 document.getElementById('remindBtn').innerHTML=IC.bell+' Remind me';
-document.getElementById('findPartyBtn').innerHTML=IC.pin+' Find watch party';
-document.getElementById('createParty').innerHTML=IC.plus+' Host your own watch party';
+document.getElementById('predictBtn').innerHTML=IC.target+' Predict';
 document.getElementById('tvriBtn').innerHTML=IC.play+' Open on TVRI Klik';
 document.getElementById('watchIc').innerHTML=bigTv;
 
@@ -777,21 +743,6 @@ async function fetchFromApi(){
     const newPreds=buildPredsFromMatches(allApiMatches);
     if(newPreds.length){preds.length=0;preds.push(...newPreds);restorePicks();}
 
-    const upcoming=allApiMatches.filter(m=>m.status==='up'&&m.h!=='TBD').slice(0,6);
-    if(upcoming.length){
-      const venues=['Kopi 27, Telanaipura','Stadion Tri Lomba, Jambi','Warkop Pak De, Kenali',
-        'Warung BRO, Simpang Rimbo','Mesjid Al-Ikhlas, Pasar Jambi','Kopi Kenangan, WTC Jambi'];
-      const names=['Begadang Bareng Kopi 27','Layar Tancap Stadion Mini','Nobar Anak Kost',
-        'Warung Bola BRO','Mesjid Al-Ikhlas Nobar','Kopi Kenangan Begadang'];
-      upcoming.forEach((m,i)=>{
-        if(parties[i]){
-          parties[i].match=`${m.h} vs ${m.a}`;
-          parties[i].f=`${m.hf}${m.af}`;
-          parties[i].time=toWIB(m.utcDate)+' WIB';
-        }
-      });
-    }
-
     updateHero();
     apiMode=true;
     return true;
@@ -917,20 +868,7 @@ function restorePicks(){
 function savePoints(){localStorage.setItem('begadang_points',String(predPoints));}
 function restorePoints(){
   const v=localStorage.getItem('begadang_points');
-  if(v)predPoints=parseInt(v)||128;
-}
-function savePartyJoins(){
-  const data={};
-  parties.forEach(p=>{if(p.joined)data[p.name]=true;});
-  localStorage.setItem('begadang_parties',JSON.stringify(data));
-}
-function restorePartyJoins(){
-  try{
-    const data=JSON.parse(localStorage.getItem('begadang_parties')||'{}');
-    parties.forEach(p=>{
-      if(data[p.name]&&!p.joined){p.joined=true;p.going++;}
-    });
-  }catch{}
+  if(v)predPoints=parseInt(v)||0;
 }
 
 /* ========== FALLBACK SAMPLE DATA ========== */
@@ -1040,16 +978,6 @@ const bracket=[
   ]},
 ];
 
-/* ========== DATA: PARTIES ========== */
-const parties=[
-  {name:"Begadang Bareng Kopi 27",match:"Argentina vs Croatia",f:"🇦🇷🇭🇷",time:"01:50 WIB",venue:"Kopi 27, Telanaipura",going:34,cap:50,joined:false},
-  {name:"Layar Tancap Stadion Mini",match:"Brazil vs Canada",f:"🇧🇷🇨🇦",time:"01:30 WIB",venue:"Stadion Tri Lomba, Jambi",going:120,cap:200,joined:false},
-  {name:"Nobar Anak Kost",match:"Spain vs Egypt",f:"🇪🇸🇪🇬",time:"03:50 WIB",venue:"Warkop Pak De, Kenali",going:18,cap:30,joined:false},
-  {name:"Warung Bola BRO",match:"England vs Japan",f:"🏴󠁧󠁢󠁥󠁮󠁧󠁿🇯🇵",time:"06:00 WIB",venue:"Warung BRO, Simpang Rimbo",going:42,cap:60,joined:false},
-  {name:"Mesjid Al-Ikhlas Nobar",match:"France vs Mexico",f:"🇫🇷🇲🇽",time:"00:50 WIB",venue:"Mesjid Al-Ikhlas, Pasar Jambi",going:85,cap:150,joined:false},
-  {name:"Kopi Kenangan Begadang",match:"Brazil vs Canada",f:"🇧🇷🇨🇦",time:"01:45 WIB",venue:"Kopi Kenangan, WTC Jambi",going:27,cap:40,joined:false},
-];
-
 /* ========== DATA: PREDICTIONS ========== */
 const preds=[
   {q:"Argentina vs Croatia — full time",opts:[["Argentina","🇦🇷"],["Draw","draw"],["Croatia","🇭🇷"]],picked:null},
@@ -1059,7 +987,7 @@ const preds=[
   {q:"England vs Japan — full time",opts:[["England","🏴󠁧󠁢󠁥󠁮󠁧󠁿"],["Draw","draw"],["Japan","🇯🇵"]],picked:null},
   {q:"Denmark vs Poland — full time",opts:[["Denmark","🇩🇰"],["Draw","draw"],["Poland","🇵🇱"]],picked:null},
 ];
-let predPoints=128;
+let predPoints=0;
 
 /* ========== DATA: BROADCAST SCHEDULE ========== */
 const schedule=[
@@ -1248,19 +1176,6 @@ function renderBracket(){
       `</div>`).join('')+`</div>`).join('');
 }
 
-/* ========== RENDER: PARTIES ========== */
-function renderParties(){
-  document.getElementById('parties').innerHTML=parties.map((p,i)=>{
-    const pct=Math.min(100,Math.round(p.going/p.cap*100));
-    return `<div class="party glass">
-      <div><div class="party-name">${p.name}</div><div class="party-match">${p.f} ${p.match}</div></div>
-      <div class="party-meta"><span>${IC.clock} ${p.time}</span><span>${IC.pin} ${p.venue}</span></div>
-      <div class="party-bottom">
-        <div class="going"><b>${p.going}</b> going · ${p.cap-p.going} spots left
-          <div class="bar"><i style="width:${pct}%"></i></div></div>
-        <button class="join-btn ${p.joined?'joined':''}" data-party="${i}">${p.joined?IC.check+' Going':'Join'}</button>
-      </div></div>`;}).join('');
-}
 
 /* ========== RENDER: PREDICTIONS ========== */
 function renderPreds(){
@@ -1429,15 +1344,6 @@ document.getElementById('grpTabs').addEventListener('click',e=>{
   const t=e.target.closest('.grp-tab');if(!t)return;
   curGroup=t.dataset.grp;renderGroupTabs();renderStandings();
 });
-document.getElementById('parties').addEventListener('click',e=>{
-  const b=e.target.closest('.join-btn');if(!b)return;
-  const i=+b.dataset.party;
-  parties[i].joined=!parties[i].joined;
-  parties[i].going+=parties[i].joined?1:-1;
-  renderParties();
-  savePartyJoins();
-  if(parties[i].joined)showToast('Joined! See you there');
-});
 document.getElementById('preds').addEventListener('click',e=>{
   const o=e.target.closest('.opt');if(!o)return;
   const pi=+o.dataset.pred;
@@ -1453,11 +1359,8 @@ document.getElementById('remindBtn').addEventListener('click',e=>{
   b.innerHTML=on?IC.check+' Reminder set':IC.bell+' Remind me';
   if(on)showToast('Reminder set for full time');
 });
-document.getElementById('findPartyBtn').addEventListener('click',()=>{
-  setNav('parties');window.scrollTo({top:260,behavior:'smooth'});
-});
-document.getElementById('createParty').addEventListener('click',()=>{
-  showToast('Party creator coming soon!');
+document.getElementById('predictBtn').addEventListener('click',()=>{
+  setNav('predict');window.scrollTo({top:0,behavior:'smooth'});
 });
 document.getElementById('tvriBtn').addEventListener('click',()=>window.open('https://tvri.go.id','_blank'));
 
@@ -1529,7 +1432,7 @@ function startAutoRefresh(){
 
 function renderAll(){
   renderDayPicker();renderFixtures();renderGroupTabs();renderStandings();
-  renderBracket();renderParties();renderPreds();renderSchedule();
+  renderBracket();renderPreds();renderSchedule();
 }
 
 function updateDemoNote(){
@@ -1554,7 +1457,6 @@ function updateDemoNote(){
   }catch{}
   restorePoints();
   restorePicks();
-  restorePartyJoins();
   const initList=fixtures[curDay]||[];
   if(initList.some(m=>m.hCrest)){
     await preloadCrests(initList);
