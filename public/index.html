@@ -862,6 +862,46 @@ function detectGoals(matches){
   });
 }
 
+function preloadCrests(matches){
+  const urls=[...new Set(matches.flatMap(m=>[m.hCrest,m.aCrest]).filter(Boolean))];
+  return Promise.all(urls.map(u=>new Promise(r=>{const i=new Image();i.onload=r;i.onerror=r;i.src=u;})));
+}
+
+function updateFixturesInPlace(){
+  const list=fixtures[curDay]||[];
+  list.forEach((m,i)=>{
+    const el=document.querySelector(`[data-fx="${curDay}:${i}"]`);
+    if(!el)return;
+    const mid=el.querySelector('.fx-mid');
+    if(!mid)return;
+    let h;
+    if(m.status==='up'){
+      const cd=countdown(m.utcDate);
+      h=cd?`<div class="fx-time countdown">${cd}</div><div class="fx-status st-up">${m.time} WIB</div>`
+        :`<div class="fx-time">${m.time}</div><div class="fx-status st-up">Upcoming</div>`;
+    }else{
+      h=`<div class="fx-score">${m.hs} : ${m.as}</div><div class="fx-status ${m.status==='live'?'st-live':'st-ft'}">${m.status==='live'?'<span class="liveball"></span>'+m.time:'Full time'}</div>`;
+    }
+    h+=`<div class="fx-group">${m.grp?'Group '+m.grp:m.stage||''}</div>`;
+    mid.innerHTML=h;
+  });
+}
+
+function updateHeroInPlace(){
+  const list=Object.values(fixtures).flat();
+  const m=list.find(x=>x.status==='live')||list.find(x=>x.status==='up')||list[0];
+  if(!m)return;
+  const hs=document.getElementById('hs');
+  const as=document.getElementById('as');
+  const clock=document.getElementById('heroClock');
+  if(hs)hs.textContent=m.hs??'-';
+  if(as)as.textContent=m.as??'-';
+  if(clock){
+    const cd=m.status==='up'?countdown(m.utcDate):null;
+    clock.textContent=m.status==='up'?(cd||m.time+' WIB'):m.time;
+  }
+}
+
 /* ========== FALLBACK SAMPLE DATA ========== */
 const days=[
   {key:"jun11",label:"Wed",num:"11",full:"11 Jun"},
@@ -1345,9 +1385,14 @@ document.getElementById('nav').addEventListener('click',e=>{
   const b=e.target.closest('.nav-btn');if(!b)return;
   setNav(b.dataset.go);window.scrollTo({top:0,behavior:'smooth'});
 });
-document.getElementById('dayPicker').addEventListener('click',e=>{
+document.getElementById('dayPicker').addEventListener('click',async e=>{
   const c=e.target.closest('.day-chip');if(!c)return;
-  curDay=c.dataset.day;renderDayPicker();renderFixtures();
+  curDay=c.dataset.day;renderDayPicker();
+  const list=fixtures[curDay]||[];
+  if(list.some(m=>m.hCrest)){
+    await preloadCrests(list);
+  }
+  renderFixtures();
 });
 document.getElementById('grpTabs').addEventListener('click',e=>{
   const t=e.target.closest('.grp-tab');if(!t)return;
@@ -1405,16 +1450,16 @@ function startAutoRefresh(){
     refreshTimer=setInterval(async()=>{
       const hasLive=Object.values(fixtures).flat().some(m=>m.status==='live');
       if(!hasLive){
-        renderFixtures();updateHero();
+        updateFixturesInPlace();updateHeroInPlace();
         return;
       }
-      const oldMatches=Object.values(fixtures).flat().filter(m=>m.id);
       await fetchFromApi();
-      const newMatches=Object.values(fixtures).flat().filter(m=>m.id);
-      detectGoals(newMatches);
-      renderAll();
+      const allMatches=Object.values(fixtures).flat().filter(m=>m.id);
+      detectGoals(allMatches);
+      updateFixturesInPlace();
+      updateHeroInPlace();
     },30000);
-    setInterval(()=>{renderFixtures();updateHero();},60000);
+    setInterval(()=>{updateFixturesInPlace();updateHeroInPlace();},60000);
   }else{
     let liveMin=67;
     refreshTimer=setInterval(()=>{
@@ -1473,6 +1518,10 @@ function updateDemoNote(){
       if(ok)apiMode=true;
     }
   }catch{}
+  const initList=fixtures[curDay]||[];
+  if(initList.some(m=>m.hCrest)){
+    await preloadCrests(initList);
+  }
   renderAll();
   updateDemoNote();
   startAutoRefresh();
